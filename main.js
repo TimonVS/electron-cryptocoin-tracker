@@ -114,7 +114,7 @@ let trayMenu = null
 app.on('ready', () => {
   const iconName = process.platform === 'win32' ? 'windows-icon.png' : 'iconTemplate.png'
 
-  tray = new Tray(`./assets/${iconName}`)
+  tray = new Tray(path.join(__dirname, `./assets/${iconName}`))
 
   tray.on('click', () => {
     tray.popUpContextMenu(trayMenu)
