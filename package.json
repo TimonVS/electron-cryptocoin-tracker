@@ -1,12 +1,12 @@
 {
-  "name": "electron-quick-start",
+  "name": "electron-cryptocoin-tracker",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/TimonVS/electron-cryptocoin-tracker",
   "keywords": [
     "Electron",
     "quick",
@@ -14,9 +14,13 @@
     "tutorial",
     "demo"
   ],
-  "author": "GitHub",
+  "author": "TimonVS",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "~1.6.2"
+    "electron": "~1.6.2",
+    "eslint": "^3.19.0"
+  },
+  "dependencies": {
+    "smalltalk": "^2.4.0"
   }
 }

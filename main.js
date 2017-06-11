@@ -1,8 +1,10 @@
 const electron = require('electron')
 // Module to control application life.
 const app = electron.app
-// Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
+const Menu = electron.Menu
+const Tray = electron.Tray
+const ipc = electron.ipcMain
 
 const path = require('path')
 const url = require('url')
@@ -11,22 +13,21 @@ const url = require('url')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+  mainWindow = new BrowserWindow({ width: 800, height: 600 })
 
   // and load the index.html of the app.
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.loadURL(
+    url.format({
+      pathname: path.join(__dirname, 'index.html'),
+      protocol: 'file:',
+      slashes: true
+    })
+  )
 
   // Emitted when the window is closed.
-  mainWindow.on('closed', function () {
+  mainWindow.on('closed', function() {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
@@ -40,7 +41,7 @@ function createWindow () {
 app.on('ready', createWindow)
 
 // Quit when all windows are closed.
-app.on('window-all-closed', function () {
+app.on('window-all-closed', function() {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
@@ -48,7 +49,7 @@ app.on('window-all-closed', function () {
   }
 })
 
-app.on('activate', function () {
+app.on('activate', function() {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
@@ -56,5 +57,84 @@ app.on('activate', function () {
   }
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+// Add application menu
+
+let appMenuTemplate = [
+  {
+    label: 'File',
+    submenu: [
+      {
+        label: 'Add cryptocurrency',
+        click: () => {
+          // Notify renderer process about click
+          mainWindow.webContents.send('add-cryptocurrency')
+        }
+      }
+    ]
+  },
+  // Default menu with developer utilities
+  {
+    label: 'View',
+    submenu: [
+      { role: 'reload' },
+      { role: 'forcereload' },
+      { role: 'toggledevtools' },
+      { type: 'separator' },
+      { role: 'resetzoom' },
+      { role: 'zoomin' },
+      { role: 'zoomout' },
+      { type: 'separator' },
+      { role: 'togglefullscreen' }
+    ]
+  }
+]
+
+// OSX requires the first item to be the name of the app
+if (process.platform === 'darwin') {
+  appMenuTemplate.unshift({
+    label: app.getName(),
+    submenu: [
+      { role: 'quit' }
+    ]
+  })
+}
+
+// Add application menu when the app is initialized
+app.on('ready', () => {
+  const appMenu = Menu.buildFromTemplate(appMenuTemplate)
+  Menu.setApplicationMenu(appMenu)
+})
+
+// Add tray menu
+
+let tray = null
+let trayMenu = null
+
+// Add tray menu when the app is initialized
+app.on('ready', () => {
+  const iconName = process.platform === 'win32' ? 'windows-icon.png' : 'iconTemplate.png'
+
+  tray = new Tray(`./assets/${iconName}`)
+
+  tray.on('click', () => {
+    tray.popUpContextMenu(trayMenu)
+  })
+})
+
+// Listen to `update-prices` event from renderer process
+ipc.on('update-prices', (event, prices) => {
+  let trayMenuTemplate = []
+  const cryptocurrencies = Object.keys(prices)
+  const currencies = ['EUR', 'USD']
+
+  // Generate all cryptocurrency / currency combinations
+  cryptocurrencies.forEach(cryptocurrency => {
+    currencies.forEach(currency => {
+      trayMenuTemplate.push({
+        label: `${cryptocurrency}-${currency}: ${prices[cryptocurrency][currency]}`
+      })
+    })
+  })
+
+  trayMenu = Menu.buildFromTemplate(trayMenuTemplate)
+})

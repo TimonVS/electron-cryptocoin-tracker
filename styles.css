@@ -1,0 +1,19 @@
+@import 'https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css';
+
+body {
+  font-family: sans-serif;
+}
+
+.currency-row {
+  width: 100%;
+  padding: 10px;
+}
+
+.currency-row:nth-child(odd) {
+  background-color: #f0f0f0;
+}
+
+.currency-title {
+  margin: 0;
+  margin-bottom: 10px;
+}
