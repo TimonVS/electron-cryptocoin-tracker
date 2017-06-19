@@ -2,6 +2,8 @@
 
 A cryptocurrency tracker built for an Electron workshop at [Nodeschool Rotterdam](https://www.meetup.com/nodeschool-rotterdam/).
 
+[Download presentation (PDF)](https://www.dropbox.com/s/jsidpki98vbrp0a/nodeschool-electron.pdf?dl=0)
+
 ## To Use
 
 To clone and run this repository you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
